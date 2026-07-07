@@ -166,7 +166,7 @@
 
   const state = {
     domain: '', assessmentType: 'Standardized', testName: '', score: '',
-    skills: '', interpretation: '', observations: '',
+    skills: '', strengths: '', interpretation: '', observations: '',
     pronoun: '', pronounCustom: '',
     output: '', loading: false, error: ''
   };
@@ -221,9 +221,10 @@ NON-NEGOTIABLE RULES:
 6. Structure the output as short paragraphs, in this order (skip any paragraph whose underlying data is missing):
    a. WHAT WAS ASSESSED — one to two sentences naming the test/measure, whether it was standardized testing or informal observation, and the general area of skill it looked at (using only the provided domainDescription, not outside knowledge of the specific test).
    b. THE RESULTS — state the score as given and the specific skills that were difficult, in neutral, plain language, with no added value judgment.
-   c. CLINICIAN'S NOTES — if a clinicianInterpretation was provided, lightly polish its grammar/flow and present it as the clinician's professional impression. Do not add anything beyond what was written.
-   d. WHAT THIS CAN LOOK LIKE DAY TO DAY — if specific skills were named, write one general, typical-pattern paragraph (in your own words, drawing on general/typical patterns for that type of skill difficulty) describing how challenges with those specific named skills commonly show up in the classroom (or workplace/daily settings if the client may not be school-aged) and in everyday life. Frame this as general, typical information about that kind of skill challenge ("clients who have difficulty with ___ often find that...") — NOT as a specific prediction, prognosis, or diagnostic claim about this particular individual. Do not introduce skills or scenarios beyond what follows naturally from the named skills.
-   e. ADDITIONAL OBSERVATIONS — if informal observations were provided, present them plainly, lightly polished, with no added interpretation.
+   c. STRENGTHS OBSERVED — if "strengthsDemonstrated" was provided, describe in plain language what the client was able to do or which skills they demonstrated in this area. State this neutrally and factually, exactly as given — do not add skills, examples, or claims beyond what was listed.
+   d. CLINICIAN'S NOTES — if a clinicianInterpretation was provided, lightly polish its grammar/flow and present it as the clinician's professional impression. Do not add anything beyond what was written.
+   e. WHAT THIS CAN LOOK LIKE DAY TO DAY — if specific skills were named, write one general, typical-pattern paragraph (in your own words, drawing on general/typical patterns for that type of skill difficulty) describing how challenges with those specific named skills commonly show up in the classroom (or workplace/daily settings if the client may not be school-aged) and in everyday life. Frame this as general, typical information about that kind of skill challenge ("clients who have difficulty with ___ often find that...") — NOT as a specific prediction, prognosis, or diagnostic claim about this particular individual. Do not introduce skills or scenarios beyond what follows naturally from the named skills.
+   f. ADDITIONAL OBSERVATIONS — if informal observations were provided, present them plainly, lightly polished, with no added interpretation.
 7. Output plain text only, no markdown symbols, no headers in all-caps labels visible to the reader (write it as natural flowing paragraphs, not a labeled list), no preamble, no commentary about these instructions — the report writeup only, ready to paste into a report or email to a parent.`;
 
   async function generate(){
@@ -236,6 +237,7 @@ NON-NEGOTIABLE RULES:
     if (state.testName.trim()) packet.testName = state.testName.trim();
     if (state.score.trim()) packet.score = state.score.trim();
     if (state.skills.trim()) packet.specificSkillsStruggledWith = state.skills.trim();
+    if (state.strengths.trim()) packet.strengthsDemonstrated = state.strengths.trim();
     if (state.interpretation.trim()) packet.clinicianInterpretation = state.interpretation.trim();
     if (state.observations.trim()) packet.additionalInformalObservations = state.observations.trim();
     const pronounValue = state.pronoun === 'custom' ? state.pronounCustom.trim() : state.pronoun;
@@ -292,7 +294,17 @@ NON-NEGOTIABLE RULES:
       field('Score', textInput(state.score, v=>state.score=v, 'e.g., Standard Score 78, or "3 of 10 sounds correct"'))
     ]));
 
-    root.appendChild(field('Specific Skills Struggled With', textArea(state.skills, v=>state.skills=v, 'e.g., producing the /r/ sound in words, following 2-step directions'), 'Only these named skills will be discussed — nothing is added beyond what you list.'));
+    root.appendChild(el('div',{class:'tbw-field'},[
+      el('label',{},['What They Did Well']),
+      el('div',{class:'tbw-hint', style:'margin-top:-2px;margin-bottom:6px;'},['What was the client able to do, or which skills did they demonstrate in this area? Only what you list here will appear.']),
+      textArea(state.strengths, v=>state.strengths=v, 'e.g., correctly produced /s/ and /z/ in all positions, followed 1-step directions consistently')
+    ]));
+
+    root.appendChild(el('div',{class:'tbw-field'},[
+      el('label',{},['What They Struggled With']),
+      el('div',{class:'tbw-hint', style:'margin-top:-2px;margin-bottom:6px;'},['Only these named skills will be discussed — nothing is added beyond what you list.']),
+      textArea(state.skills, v=>state.skills=v, 'e.g., producing the /r/ sound in words, following 2-step directions')
+    ]));
 
     root.appendChild(field('Clinician\'s Interpretation (optional)', textArea(state.interpretation, v=>state.interpretation=v, 'Your own clinical impression, in your words — the AI will only lightly polish this, never generate its own.')));
 
