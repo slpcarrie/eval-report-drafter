@@ -143,9 +143,8 @@
 
 <script>
 (function(){
-  // ⚠️ UPDATE THIS after you deploy your Vercel function — see deployment instructions.
-  // Example: "https://your-project-name.vercel.app/api/generate"
-  const API_ENDPOINT = "https://YOUR-VERCEL-PROJECT.vercel.app/api/generate";
+  // Frontend and API function are deployed together on Vercel, so this is a relative path.
+  const API_ENDPOINT = "/api/generate";
 
   const DOMAINS = [
     {value:'', label:'— Select area —'},
