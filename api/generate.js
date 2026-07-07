@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Allow your GitHub Pages / Mighty Networks embed to call this endpoint
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -36,6 +36,6 @@ export default async function handler(req, res) {
     return res.status(response.status).json(data);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: 'Server error generating report' });
+    return res.status(500).json({ error: 'Server error generating report', details: String(err) });
   }
-}
+};
