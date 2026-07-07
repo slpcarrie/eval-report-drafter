@@ -1,0 +1,331 @@
+<style>
+  #tbw-root {
+    --ink: #2E2B27;
+    --paper: #F7F4EE;
+    --panel: #FFFFFF;
+    --rule: #DAD3C4;
+    --deep: #1E3A38;
+    --deep-2: #2C4F4C;
+    --sage: #7C9473;
+    --gold: #B8863A;
+    --danger: #A1442E;
+    --font-display: 'Source Serif 4', 'Georgia', serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    border-radius: 14px;
+    padding: 30px 34px;
+    max-width: 720px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  #tbw-root * { box-sizing: border-box; }
+  #tbw-root h1.tbw-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    margin: 0 0 4px;
+    color: var(--deep);
+  }
+  #tbw-root .tbw-sub {
+    font-size: 13px;
+    color: #756F63;
+    margin: 0 0 20px;
+  }
+  #tbw-root .tbw-notice {
+    display: flex;
+    gap: 10px;
+    background: #FBF3E4;
+    border: 1px solid #E8CFA0;
+    border-radius: 9px;
+    padding: 11px 13px;
+    font-size: 12.5px;
+    color: #6B4E1E;
+    margin-bottom: 22px;
+    line-height: 1.55;
+  }
+  #tbw-root .tbw-notice b { color: var(--gold); }
+  #tbw-root .tbw-field { margin-bottom: 16px; }
+  #tbw-root label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #6B6557;
+    margin-bottom: 6px;
+  }
+  #tbw-root .tbw-hint {
+    font-size: 11.5px;
+    color: #948C7B;
+    margin-top: 4px;
+  }
+  #tbw-root input[type=text], #tbw-root textarea, #tbw-root select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: #FDFCFA;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  #tbw-root input:focus, #tbw-root textarea:focus, #tbw-root select:focus {
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(124,148,115,0.18);
+  }
+  #tbw-root textarea { min-height: 66px; resize: vertical; }
+  #tbw-root .tbw-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { #tbw-root .tbw-row2 { grid-template-columns: 1fr; } }
+  #tbw-root .tbw-toggle {
+    display: flex;
+    gap: 8px;
+  }
+  #tbw-root .tbw-toggle button {
+    flex: 1;
+    padding: 9px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--rule);
+    background: #FDFCFA;
+    font-family: var(--font-body);
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  #tbw-root .tbw-toggle button.active {
+    background: var(--deep);
+    color: #EFE9DC;
+    border-color: var(--deep);
+  }
+  #tbw-root button.tbw-btn {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+  }
+  #tbw-root .tbw-btn-primary { background: var(--deep); color: #EFE9DC; width: 100%; margin-top: 6px; }
+  #tbw-root .tbw-btn-primary:hover { background: var(--deep-2); }
+  #tbw-root .tbw-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  #tbw-root .tbw-btn-ghost { background: transparent; color: var(--deep); border: 1px solid var(--rule) !important; }
+  #tbw-root .tbw-divider { border-top: 1px solid var(--rule); margin: 26px 0 20px; }
+  #tbw-root .tbw-loading {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--deep-2); font-size: 13.5px; padding: 30px 0; justify-content: center;
+  }
+  #tbw-root .tbw-spinner {
+    width: 16px; height: 16px;
+    border: 2.5px solid var(--rule);
+    border-top-color: var(--sage);
+    border-radius: 50%;
+    animation: tbwspin 0.8s linear infinite;
+  }
+  @keyframes tbwspin { to { transform: rotate(360deg); } }
+  #tbw-root .tbw-toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  #tbw-root textarea.tbw-output {
+    width: 100%;
+    min-height: 280px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    padding: 18px;
+    border-radius: 10px;
+  }
+  #tbw-root .tbw-error { color: var(--danger); font-size: 13px; margin-top: 10px; }
+</style>
+
+<div id="tbw-root"></div>
+
+<script>
+(function(){
+  // ⚠️ UPDATE THIS after you deploy your Vercel function — see deployment instructions.
+  // Example: "https://your-project-name.vercel.app/api/generate"
+  const API_ENDPOINT = "https://YOUR-VERCEL-PROJECT.vercel.app/api/generate";
+
+  const DOMAINS = [
+    {value:'', label:'— Select area —'},
+    {value:'Speech Sound Development', desc:'how clearly a child produces speech sounds'},
+    {value:'Language Skills', desc:"how a child understands and uses spoken language"},
+    {value:'Social Communication', desc:'how a child uses language and communication in social situations'},
+    {value:'Functional Communication', desc:"how a child communicates to get their needs met in daily life"},
+    {value:'Fluency', desc:"the flow and rhythm of a child's speech"},
+    {value:'Voice/Resonance', desc:"the quality, pitch, and resonance of a child's voice"}
+  ];
+
+  const PRONOUN_OPTIONS = [
+    {value:'', label:'— Select pronouns —'},
+    {value:'he/him', label:'He/Him'},
+    {value:'she/her', label:'She/Her'},
+    {value:'they/them', label:'They/Them'},
+    {value:'custom', label:'Custom (type in)'}
+  ];
+
+  const state = {
+    domain: '', assessmentType: 'Standardized', testName: '', score: '',
+    skills: '', interpretation: '', observations: '',
+    pronoun: '', pronounCustom: '',
+    output: '', loading: false, error: ''
+  };
+
+  function el(tag, attrs, children){
+    const e = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      if (k === 'class') e.className = attrs[k];
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] === false || attrs[k] === null || attrs[k] === undefined) { /* skip falsy boolean attrs like disabled:false */ }
+      else e.setAttribute(k, attrs[k]);
+    }
+    (children||[]).forEach(c => { if (c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function field(labelText, inputEl, hint){
+    const children = [el('label',{},[labelText]), inputEl];
+    if (hint) children.push(el('div',{class:'tbw-hint'},[hint]));
+    return el('div',{class:'tbw-field'}, children);
+  }
+  function textInput(value, onInput, placeholder){
+    const i = el('input',{type:'text', placeholder: placeholder||''});
+    i.value = value || '';
+    i.addEventListener('input', e => onInput(e.target.value));
+    return i;
+  }
+  function textArea(value, onInput, placeholder){
+    const i = el('textarea',{placeholder: placeholder||''});
+    i.value = value || '';
+    i.addEventListener('input', e => onInput(e.target.value));
+    return i;
+  }
+  function selectInput(value, options, onInput){
+    const s = el('select',{});
+    options.forEach(opt => {
+      const o = el('option',{value: opt.value},[opt.label || opt.value]);
+      if (opt.value === value) o.selected = true;
+      s.appendChild(o);
+    });
+    s.addEventListener('change', e => onInput(e.target.value));
+    return s;
+  }
+
+  const SYSTEM_PROMPT = `You are a writing assistant that turns a single speech-language test/assessment result into a short, third-person, copy-paste-ready report writeup. You will receive a JSON packet describing exactly ONE assessment result — never assume there is other information about the individual.
+
+NON-NEGOTIABLE RULES:
+1. Use ONLY the fields provided in the JSON packet. Never invent a test's specific methodology, publisher details, additional scores, or additional skills beyond what is given. A short generic "domainDescription" field is provided for you to describe, in general terms, what kind of skills that broad area covers — do not add outside knowledge about the specific named test itself beyond restating its name and whether it was standardized or informal/observational.
+2. Never characterize whether the score is good, bad, strong, weak, mild, severe, or concerning using your own judgment. Only use evaluative language if it is explicitly present in the "clinicianInterpretation" field, and treat that as the clinician's own words to lightly polish, not your own conclusion.
+3. Do not diagnose and do not imply a specific diagnosis.
+4. Write in warm, plain, third-person language. Refer to the individual as "the client" throughout — never "the child," "the kid," "the student," or "your child," since the tool is used for clients of any age. If a "pronoun" field is provided, use those pronouns whenever referring to the client (e.g., "the client struggled with... his/her/their/[custom] ability to..."); if no pronoun is provided, keep using "the client" and avoid pronouns rather than guessing. Briefly explain any clinical term you must use.
+5. If a field is missing/empty, leave it out entirely — do not invent filler, do not write "not reported."
+6. Structure the output as short paragraphs, in this order (skip any paragraph whose underlying data is missing):
+   a. WHAT WAS ASSESSED — one to two sentences naming the test/measure, whether it was standardized testing or informal observation, and the general area of skill it looked at (using only the provided domainDescription, not outside knowledge of the specific test).
+   b. THE RESULTS — state the score as given and the specific skills that were difficult, in neutral, plain language, with no added value judgment.
+   c. CLINICIAN'S NOTES — if a clinicianInterpretation was provided, lightly polish its grammar/flow and present it as the clinician's professional impression. Do not add anything beyond what was written.
+   d. WHAT THIS CAN LOOK LIKE DAY TO DAY — if specific skills were named, write one general, typical-pattern paragraph (in your own words, drawing on general/typical patterns for that type of skill difficulty) describing how challenges with those specific named skills commonly show up in the classroom (or workplace/daily settings if the client may not be school-aged) and in everyday life. Frame this as general, typical information about that kind of skill challenge ("clients who have difficulty with ___ often find that...") — NOT as a specific prediction, prognosis, or diagnostic claim about this particular individual. Do not introduce skills or scenarios beyond what follows naturally from the named skills.
+   e. ADDITIONAL OBSERVATIONS — if informal observations were provided, present them plainly, lightly polished, with no added interpretation.
+7. Output plain text only, no markdown symbols, no headers in all-caps labels visible to the reader (write it as natural flowing paragraphs, not a labeled list), no preamble, no commentary about these instructions — the report writeup only, ready to paste into a report or email to a parent.`;
+
+  async function generate(){
+    state.loading = true; state.error = ''; state.output = '';
+    render();
+    const domainObj = DOMAINS.find(d => d.value === state.domain);
+    const packet = {};
+    if (state.domain) { packet.domain = state.domain; packet.domainDescription = domainObj ? domainObj.desc : ''; }
+    if (state.assessmentType) packet.assessmentType = state.assessmentType;
+    if (state.testName.trim()) packet.testName = state.testName.trim();
+    if (state.score.trim()) packet.score = state.score.trim();
+    if (state.skills.trim()) packet.specificSkillsStruggledWith = state.skills.trim();
+    if (state.interpretation.trim()) packet.clinicianInterpretation = state.interpretation.trim();
+    if (state.observations.trim()) packet.additionalInformalObservations = state.observations.trim();
+    const pronounValue = state.pronoun === 'custom' ? state.pronounCustom.trim() : state.pronoun;
+    if (pronounValue) packet.pronoun = pronounValue;
+
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          max_tokens: 1200,
+          system: SYSTEM_PROMPT,
+          messages: [{ role:"user", content: "Here is the single assessment result:\n\n" + JSON.stringify(packet, null, 2) }]
+        })
+      });
+      const data = await response.json();
+      const blocks = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text);
+      const draft = blocks.join('\n').trim();
+      state.output = draft
+        ? draft + '\n\n[Reminder: replace "the client" throughout with the individual\'s name before sharing or filing this writeup.]'
+        : '(No content returned. Please try again.)';
+    } catch(err){
+      state.error = 'Something went wrong drafting the report. Please try again.';
+      console.error(err);
+    }
+    state.loading = false;
+    render();
+  }
+
+  function render(){
+    const root = document.getElementById('tbw-root');
+    root.innerHTML = '';
+    root.appendChild(el('h1',{class:'tbw-title'},['Assessment Report Drafter']));
+    root.appendChild(el('p',{class:'tbw-sub'},['Turn one test or observation into a plain-language, copy-paste-ready writeup, written in the third person about "the client." One result at a time — no names, dates, or other identifiers needed.']));
+    root.appendChild(el('div',{class:'tbw-notice'},['🛈 ', el('span',{},[el('b',{},['Note: ']),'The AI never interprets your data. It only writes up what you enter, in plain language. The only paragraph it generates on its own is a general "what this can look like day to day" paragraph based on the specific skills you name — never a claim about this specific child\'s diagnosis or future.'])]));
+
+    root.appendChild(field('Area Being Assessed', selectInput(state.domain, DOMAINS, v=>{state.domain=v; render();})));
+
+    const pronounSelect = selectInput(state.pronoun, PRONOUN_OPTIONS, v=>{state.pronoun=v; render();});
+    root.appendChild(field('Client\'s Pronouns', pronounSelect, 'Used so the writeup refers to the client naturally instead of repeating "the client" every time.'));
+    if (state.pronoun === 'custom'){
+      root.appendChild(field('Custom Pronoun (e.g., "ze/zir")', textInput(state.pronounCustom, v=>state.pronounCustom=v, 'Type the pronoun set to use')));
+    }
+
+    const toggleWrap = el('div',{class:'tbw-toggle'});
+    ['Standardized','Informal/Observation'].forEach(opt => {
+      const btn = el('button',{class: state.assessmentType===opt?'active':'', onclick:()=>{state.assessmentType=opt; render();}},[opt]);
+      toggleWrap.appendChild(btn);
+    });
+    root.appendChild(field('Assessment Type', toggleWrap));
+
+    root.appendChild(el('div',{class:'tbw-row2'},[
+      field('Test / Measure Name', textInput(state.testName, v=>state.testName=v, 'e.g., Goldman-Fristoe Test of Articulation, 3rd Edition'), 'Please write out the full test name rather than an abbreviation (e.g., "Goldman-Fristoe Test of Articulation" instead of "GFTA-3") — this keeps the writeup clear for parents and other readers who may not know the acronym.'),
+      field('Score', textInput(state.score, v=>state.score=v, 'e.g., Standard Score 78, or "3 of 10 sounds correct"'))
+    ]));
+
+    root.appendChild(field('Specific Skills Struggled With', textArea(state.skills, v=>state.skills=v, 'e.g., producing the /r/ sound in words, following 2-step directions'), 'Only these named skills will be discussed — nothing is added beyond what you list.'));
+
+    root.appendChild(field('Clinician\'s Interpretation (optional)', textArea(state.interpretation, v=>state.interpretation=v, 'Your own clinical impression, in your words — the AI will only lightly polish this, never generate its own.')));
+
+    root.appendChild(field('Additional Informal Observations (optional)', textArea(state.observations, v=>state.observations=v, 'e.g., notes from classroom observation or parent report')));
+
+    const genBtn = el('button',{class:'tbw-btn tbw-btn-primary', disabled: state.loading, onclick: generate},[state.loading ? 'Drafting...' : 'Draft Report']);
+    root.appendChild(genBtn);
+    if (state.error) root.appendChild(el('div',{class:'tbw-error'},[state.error]));
+
+    if (state.loading){
+      root.appendChild(el('div',{class:'tbw-loading'},[el('div',{class:'tbw-spinner'}),'Drafting your report...']));
+    }
+
+    if (state.output && !state.loading){
+      root.appendChild(el('div',{class:'tbw-divider'}));
+      const toolbar = el('div',{class:'tbw-toolbar'});
+      const copyBtn = el('button',{class:'tbw-btn tbw-btn-ghost', onclick:()=>{
+        navigator.clipboard.writeText(document.getElementById('tbw-output-text').value);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(()=>copyBtn.textContent='Copy to clipboard', 1400);
+      }},['Copy to clipboard']);
+      const regenBtn = el('button',{class:'tbw-btn tbw-btn-ghost', onclick: generate},['Regenerate']);
+      toolbar.appendChild(copyBtn);
+      toolbar.appendChild(regenBtn);
+      root.appendChild(toolbar);
+      const ta = el('textarea',{class:'tbw-output', id:'tbw-output-text'});
+      ta.value = state.output;
+      ta.addEventListener('input', e => state.output = e.target.value);
+      root.appendChild(ta);
+    }
+  }
+
+  render();
+})();
+</script>
