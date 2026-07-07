@@ -143,8 +143,8 @@
 
 <script>
 (function(){
-  // Frontend and API function are deployed together on Vercel, so this is a relative path.
-  const API_ENDPOINT = "/api/generate";
+  // Page is served from GitHub Pages; the API function lives on Vercel, so this must be the full URL.
+  const API_ENDPOINT = "https://eval-report-drafter.vercel.app/api/generate";
 
   const DOMAINS = [
     {value:'', label:'— Select area —'},
